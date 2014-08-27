@@ -1,5 +1,5 @@
-#!/bin/bash
-# /etc/init.d/minecraft
+#!/bin/sh
+# /etc/rc.d/minecraft
 # set perms to 755
 # Derived from script here: http://blog.bigdinosaur.org/serving-minecraft-on-ubuntu/
 # and here: http://forums.srcds.com/viewtopic/5835
@@ -21,8 +21,8 @@
 
 #Settings
 SERVICE='McMyAdmin.exe'
-USERNAME="freeman"
-MCPATH='/home/freeman/minecraft'
+USERNAME="minecraft"
+MCPATH='/srv/minecraft'
 ## If you have more than one Minecraft instance to control, add additional MCPATH
 ## variables below
 # MCPATH2='/home/mcuser/minecraft2'
@@ -33,7 +33,7 @@ as_user() {
   if [ "$ME" == "$USERNAME" ] ; then
 		bash -c "$1"
 	else
-		su - $USERNAME -c "$1"
+		su $USERNAME -c "$1"
 	fi
 }
 
@@ -44,7 +44,7 @@ mc_start() {
 		else
 			echo "$SERVICE was not running... starting."
 			cd $MCPATH
-			as_user "cd $MCPATH && screen -dmS minecraft mono McMyAdmin.exe /home/freeman/minecraft/McMyAdmin.conf"
+			as_user "cd $MCPATH && screen -dmS minecraft mono McMyAdmin.exe"
 			## Add additional lines for additioanl Minecrat instances below here
 			# as_user "cd $MCPATH2 && screen -dmS minecraft mono McMyAdmin.exe /home/freeman/minecraft/McMyAdmin.conf"
 			sleep 7
@@ -124,8 +124,8 @@ case "$1" in
 	;;
 *)
 
-  # echo "Usage: /etc/init.d/minecraft {start|stop|update|status|restart}"
-  echo "Usage: /etc/init.d/minecraft {start|stop|status|restart}"
+  # echo "Usage: /etc/rc.d/minecraft {start|stop|update|status|restart}"
+  echo "Usage: /etc/rc.d/minecraft {start|stop|status|restart}"
   exit 1
   ;;
 esac
