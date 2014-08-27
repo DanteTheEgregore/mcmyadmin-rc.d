@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 #PROVIDE: minecraft
+#REQUIRE: LOGIN
 
 . /etc/rc.subr
 
