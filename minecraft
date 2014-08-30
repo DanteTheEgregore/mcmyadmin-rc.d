@@ -1,7 +1,17 @@
 #!/bin/sh
 #
-#PROVIDE: minecraft
-#REQUIRE: LOGIN
+# /etc/init.d/minecraft
+# set perms to 755
+# Derived from script here: http://blog.bigdinosaur.org/serving-minecraft-on-ubuntu/
+# and here: http://forums.srcds.com/viewtopic/5835
+# reddit.com/u/dicknuckle
+#
+# depends: mono mcmyadmin minecraft freebsd
+#
+# PROVIDE: minecraft
+# REQUIRE: DAEMON
+# BEFORE: LOGIN
+# KEYWORD: shutdown
 
 . /etc/rc.subr
 
@@ -10,7 +20,7 @@ rcvar="mc_enable"
 start_cmd="mc_start"
 stop_cmd="mc_stop"
 restart_cmd="mc_restart"
-update_cmd="mc_update"
+# update_cmd="mc_update" 
 status_cmd="mc_status"
 
 #Settings
@@ -18,6 +28,9 @@ SERVICE='McMyAdmin.exe'
 USERNAME="minecraft"
 MCPATH='/srv/minecraft'
 ME=`whoami`
+## If you have more than one Minecraft instance to control, add additional MCPATH
+## variables below
+# MCPATH2='/home/mcuser/minecraft2'
 
 load_rc_config ${name}
 
@@ -37,6 +50,8 @@ mc_start() {
       echo "$SERVICE was not running... starting."
       cd $MCPATH
       as_user "cd $MCPATH && screen -dmS minecraft mono McMyAdmin.exe"
+      ## Add additional lines for additioanl Minecrat instances below here
+      # as_user "cd $MCPATH2 && screen -dmS minecraft mono McMyAdmin.exe /home/freeman/minecraft/McMyAdmin.conf"
       sleep 7
       if ps ax | grep -v grep | grep -v -i SCREEN | grep $SERVICE > /dev/null
         then
@@ -51,6 +66,9 @@ mc_stop() {
   if ps ax | grep -v grep | grep -v -i SCREEN | grep $SERVICE > /dev/null
     then
       echo "$SERVICE is running... stopping."
+      ## Add a line for each task for each Minecraft server you're controlling
+      # wake the server (not workig right now, so dont use auto sleep function in McMyAdmin)
+      # as_user "screen -p 0 -S minecraft -X eval 'stuff \"/start\"\015'"
       sleep 7
       # broadcast shutdown notification to players
       as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER SHUTTING DOWN IN 10 SECONDS. Saving map...\"\015'"
@@ -77,6 +95,7 @@ mc_restart() {
   mc_start
 }
 
+################### McMyAdmin /update FUNCTION DOES NOT WORK CRASHES SERVER!!!!!!!!!
 mc_update() {
   as_user "screen -p 0 -S minecraft -X eval 'stuff \"say SERVER GOING DOWN FOR UPDATE IN 10 SECS!\"\015'"
   sleep 10
